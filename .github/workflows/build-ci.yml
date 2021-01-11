@@ -26,6 +26,5 @@ jobs:
           tags: feriva22/resto-backend:latest
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
