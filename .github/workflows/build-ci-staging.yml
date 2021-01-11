@@ -1,7 +1,8 @@
 name: building-Image
 on:
   push:
-    branches: [main]
+    branches:
+      - "staging"
 
 jobs:
   main:
@@ -18,12 +19,17 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set Up Environtment to Staging
+        uses: canastro/copy-file-action@master
+        with:
+          source: ".env.staging"
+          target: ".env"
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: feriva22/resto-backend:latest
+          tags: feriva22/resto-backend:staging
           context: .
           file: ./Dockerfile
       - name: Image digest
