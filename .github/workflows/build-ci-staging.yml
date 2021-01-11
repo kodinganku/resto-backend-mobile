@@ -35,8 +35,3 @@ jobs:
           file: ./Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
-  deploy-to-kubernetes:
-    runs-on: ubuntu-latest
-      steps:
-        - 
