@@ -8,6 +8,7 @@ env:
   REGISTRY_NAME: kodinganku.azurecr.io
   KUBE_NAMESPACE: resto-backend
   APP_NAME: azure-resto-backend-staging
+  APP_VERSION: staging-${{ github.sha }}
 
 jobs:
   build-and-deploy:
@@ -40,17 +41,16 @@ jobs:
           source: ".env.staging"
           target: ".env"
       - name: Set Up Env File from Github Environtment
-        uses: SpicyPizza/create-envfile@v1
+        uses: TickX/var-to-dotenv@v1.1.1
         with:
-          envkey_LAST_VERSION_COMMIT: staging-${{ github.sha }}
-          directory: .
-          file_name: .env
+          APP_VERSION: ${{ env.APP_VERSION }}
+          envPath: ".env"
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ env.REGISTRY_NAME }}/resto-backend:staging-${{ github.sha }}
+          tags: ${{ env.REGISTRY_NAME }}/resto-backend:${{ env.APP_VERSION }}
           context: .
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
@@ -63,7 +63,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} resto-backend-container=${{ env.REGISTRY_NAME }}/resto-backend:staging-${{ github.sha }}
+          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} resto-backend-container=${{ env.REGISTRY_NAME }}/resto-backend:${{ env.APP_VERSION }}
       - name: Verify deployment
         uses: steebchen/kubectl@master
         env:
