@@ -44,5 +44,9 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-      - name: Set Up Target Namespace Kubernetes
-        run: kubectl --kubeconfig="${{ secrets.KUBECONFIG }}" get namespaces
+      - name: Deploy to kubernetes cluster
+        uses: steebchen/kubectl@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: get namespaces
