@@ -41,7 +41,9 @@ jobs:
           source: ".env.staging"
           target: ".env"
       - name: Set Up Env File from Github Environtment
-        run: echo "APP_VERSION=${{ env.APP_VERSION }}" >> .env
+        uses: CallePuzzle/envvar-to-dotenv-action@0.1.0
+        with:
+          variableName: APP_VERSION
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
