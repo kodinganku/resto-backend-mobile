@@ -15,7 +15,7 @@ export class GenericError extends Error {
     return {
       message: this.message,
       environtment: process.env.NODE_ENV,
-      version_app: process.env.LAST_VERSION_COMMIT || "none",
+      app_version: process.env.APP_VERSION || "none",
     };
   }
 }
