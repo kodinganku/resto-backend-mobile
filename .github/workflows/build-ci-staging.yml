@@ -4,6 +4,12 @@ on:
     branches:
       - "staging"
 
+env:
+  REGISTRY_NAME: kodinganku.azurecr.io
+  CLUSTER_NAME: kodingankuCluster
+  CLUSTER_RESOURCE_GROUP: learning-kubernetes
+  NAMESPACE: azure-resto-staging
+
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
@@ -37,3 +43,6 @@ jobs:
           file: ./Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: Set Up Target Namespace Kubernetes
+        run: kubectl --kubeconfig="${{ secrets.KUBECONFIG }}" get namespaces
