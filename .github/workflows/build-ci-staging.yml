@@ -43,7 +43,8 @@ jobs:
       - name: Set Up Env File from Github Environtment
         uses: TickX/var-to-dotenv@v1.1.1
         with:
-          APP_VERSION: ${{ env.APP_VERSION }}
+          key: "APP_VERSION"
+          value: ${{ env.APP_VERSION }}
           envPath: ".env"
       - name: Build and Push
         id: docker_build
