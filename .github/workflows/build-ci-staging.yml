@@ -32,8 +32,6 @@ jobs:
         with:
           source: ".env.staging"
           target: ".env"
-      - name: Check version last commit
-        run: echo ${ GITHUB_SHA }
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
