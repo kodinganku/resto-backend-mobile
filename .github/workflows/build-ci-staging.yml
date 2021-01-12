@@ -42,7 +42,7 @@ jobs:
       - name: Set Up Env File from Github Environtment
         uses: SpicyPizza/create-envfile@v1
         with:
-          envkey_LAST_VERSION_COMMIT=staging-${{ github.sha }}
+          envkey_LAST_VERSION_COMMIT: staging-${{ github.sha }}
           directory: .
           file_name: .env
       - name: Build and Push
