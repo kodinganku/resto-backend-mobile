@@ -6,12 +6,12 @@ on:
 
 env:
   REGISTRY_NAME: kodinganku.azurecr.io
-  CLUSTER_NAME: kodingankuCluster
-  CLUSTER_RESOURCE_GROUP: learning-kubernetes
-  NAMESPACE: azure-resto-staging
+  KUBE_VERSION: 1.18.10
+  NAMESPACE: resto-backend
+  APP_NAME: azure-backend-staging
 
 jobs:
-  build-docker-image:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,7 +25,7 @@ jobs:
       - name: Login to Azure Container Registry
         uses: docker/login-action@v1
         with:
-          registry: kodinganku.azurecr.io
+          registry: ${{ env.REGISTRY_NAME }}
           username: ${{ secrets.CRAZURE_USERNAME }}
           password: ${{ secrets.CRAZURE_TOKEN }}
       - name: Set Up Environtment to Staging
@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: kodinganku.azurecr.io/resto-backend:staging
+          tags: ${{ env.REGISTRY_NAME }}/resto-backend:staging
           context: .
           file: ./Dockerfile
       - name: Image digest
@@ -49,4 +49,10 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: get namespaces
+          args: set image --record deployment/${{ env.APP_NAME }} container=${{ env.REGISTRY_NAME }}/resto-backend:staging
+      - name: Verify deployment
+        uses: steebchen/kubectl@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          args: '"rollout status deployment/${{ env.APP_NAME }}"'
