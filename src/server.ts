@@ -7,6 +7,7 @@ import { verifyAuthToken } from "./lib/auth";
 
 async function main() {
   console.log(`Running on Environtment ${process.env.NODE_ENV} 🔥`);
+  console.log(`Use version commit : ${process.env.LAST_VERSION_COMMIT || "none"}`);
 
   let express = require("express");
   let app = express();
