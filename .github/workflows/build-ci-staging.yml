@@ -1,10 +1,8 @@
 name: CI/CD Staging Environtment
 on:
   push:
-    branches:
-      - "staging"
     tags:
-      - "v*.*.*-*"
+      - "v*.*.*-staging"
 
 env:
   REGISTRY_NAME: kodinganku.azurecr.io
