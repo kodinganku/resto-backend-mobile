@@ -32,12 +32,14 @@ jobs:
         with:
           source: ".env.staging"
           target: ".env"
+      - name: Check version last commit
+        run: echo ${ GITHUB_SHA }
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ env.REGISTRY_NAME }}/resto-backend:${{ GITHUB_SHA }}
+          tags: ${{ env.REGISTRY_NAME }}/resto-backend:${ GITHUB_SHA }
           context: .
           file: ./Dockerfile
       - name: Image digest
@@ -48,7 +50,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} resto-backend-container=${{ env.REGISTRY_NAME }}/resto-backend:${{ GITHUB_SHA }}
+          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} resto-backend-container=${{ env.REGISTRY_NAME }}/resto-backend:${ GITHUB_SHA }
       - name: Verify deployment
         uses: steebchen/kubectl@master
         env:
