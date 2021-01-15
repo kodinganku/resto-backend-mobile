@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: resto-backend
-  name: azure-resto-backend-staging
+  namespace: resto-app
+  name: resto-backend-staging
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: azure-resto-backend-staging
+      app: resto-backend-staging
   template:
     metadata:
       labels:
-        app: azure-resto-backend-staging
+        app: resto-backend-staging
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
       containers:
-        - name: resto-backend-container
+        - name: backend-container
           image: kodinganku.azurecr.io/resto-backend:staging
           resources:
             requests:
@@ -31,11 +31,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: resto-backend
-  name: azure-resto-backend-staging
+  namespace: resto-app
+  name: resto-backend-staging
 spec:
   type: LoadBalancer
   ports:
     - port: 4003
   selector:
-    app: azure-resto-backend-staging
+    app: resto-backend-staging
