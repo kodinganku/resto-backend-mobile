@@ -21,8 +21,8 @@ jobs:
           to: ${{ env.CHAT_ID_TELEGRAM }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Start Workflow ${{ github.workflow }} on ${{ repo }} with branch ${{ commit.ref }} : ${{ commit.sha }}.
-            Initiated by ${{ repo.namespace }}
+            Start Workflow ${{ GITHUB_WORKFLOW }} on ${{ GITHUB_REPOSITORY }} with branch ${{ GITHUB_REF }} : ${{ GITHUB_SHA }}.
+            Initiated by ${{ GITHUB_ACTOR }}
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
@@ -88,5 +88,5 @@ jobs:
           to: ${{ env.CHAT_ID_TELEGRAM }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Finish run Workflow ${{ github.workflow }} on ${{ repo }} with branch ${{ commit.ref }} : ${{ commit.sha }}.
-            Initiated by ${{ repo.namespace }}
+            Finish Workflow ${{ GITHUB_WORKFLOW }} on ${{ GITHUB_REPOSITORY }} with branch ${{ GITHUB_REF }} : ${{ GITHUB_SHA }}.
+            Initiated by ${{ GITHUB_ACTOR }}
