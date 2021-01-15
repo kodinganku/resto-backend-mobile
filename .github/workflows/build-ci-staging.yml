@@ -2,7 +2,7 @@ name: CI/CD Staging Environtment
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*-*"
 
 env:
   REGISTRY_NAME: kodinganku.azurecr.io
@@ -20,7 +20,7 @@ jobs:
         with:
           to: ${{ env.CHAT_ID_TELEGRAM }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: "Start Workflow $GITHUB_WORKFLOW on $GITHUB_REPOSITORY with branch $GITHUB_REF : $GITHUB_SHA.Initiated by $GITHUB_ACTOR"
+          message: "Start Workflow ${ GITHUB_WORKFLOW } on ${ GITHUB_REPOSITORY } with branch ${ GITHUB_REF } : ${ GITHUB_SHA }.Initiated by ${ GITHUB_ACTOR }"
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
@@ -73,7 +73,7 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} resto-backend-container=${{ env.REGISTRY_NAME }}/resto-backend:${{ env.RELEASE_VERSION }}
+          args: set image --record deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }} backend-container=${{ env.REGISTRY_NAME }}/resto-backend:${{ env.RELEASE_VERSION }}
       - name: Verify deployment
         uses: steebchen/kubectl@master
         env:
@@ -85,4 +85,4 @@ jobs:
         with:
           to: ${{ env.CHAT_ID_TELEGRAM }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: "Finish Workflow $GITHUB_WORKFLOW on $GITHUB_REPOSITORY with branch $GITHUB_REF : $GITHUB_SHA.Initiated by $GITHUB_ACTOR"
+          message: "Finish Workflow ${ GITHUB_WORKFLOW } on ${ GITHUB_REPOSITORY } with branch ${ GITHUB_REF } : ${ GITHUB_SHA }.Initiated by ${ GITHUB_ACTOR }"
