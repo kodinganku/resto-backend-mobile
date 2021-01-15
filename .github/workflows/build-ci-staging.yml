@@ -6,14 +6,23 @@ on:
 
 env:
   REGISTRY_NAME: kodinganku.azurecr.io
-  KUBE_NAMESPACE: resto-backend
-  APP_NAME: azure-resto-backend-staging
+  KUBE_NAMESPACE: resto-app
+  APP_NAME: resto-backend-staging
+  CHAT_ID_TELEGRAM: -415989714
 
 jobs:
   build-and-deploy:
     if: github.event.base_ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
+      - name: prerun workflow notif tele
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.CHAT_ID_TELEGRAM }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Start Workflow ${{ github.workflow }} on ${{ repo }} with branch ${{ commit.ref }} : ${{ commit.sha }}.
+            Initiated by ${{ repo.namespace }}
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
@@ -46,6 +55,7 @@ jobs:
         with:
           source: ".env.staging"
           target: ".env"
+
       - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -57,6 +67,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Deploy to kubernetes cluster
@@ -71,3 +82,11 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
           args: rollout status deployment/${{ env.APP_NAME }} -n ${{ env.KUBE_NAMESPACE }}
+      - name: postrun workflow notif tele
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.CHAT_ID_TELEGRAM }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Finish run Workflow ${{ github.workflow }} on ${{ repo }} with branch ${{ commit.ref }} : ${{ commit.sha }}.
+            Initiated by ${{ repo.namespace }}
