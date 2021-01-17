@@ -4,7 +4,7 @@ import { getCustomRepository } from "typeorm";
 import { GenericError } from "../lib/utils";
 import { generateRefreshToken, verifyGoogleToken, getAuthResponse } from "../lib/auth";
 
-import { CustomerRepository } from "../database/repository/CustomerRepository";
+import { CustomerRepository } from "../database/repository/";
 @JsonController("/auth")
 export class AuthController {
   @Post("/")

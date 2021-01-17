@@ -1,23 +1,21 @@
 require("dotenv").config();
 
 import "reflect-metadata"; // this shim is required
-import { useExpressServer, Action } from "routing-controllers";
+import { useExpressServer } from "routing-controllers";
 import loaders from "./loaders";
-import { verifyAuthToken } from "./lib/auth";
+import { currentUserChecker, authorizationChecker } from "./lib/auth";
 
 async function main() {
   console.log(`Running on Environtment ${process.env.NODE_ENV} 🔥`);
-  console.log(`Use version commit : ${process.env.APP_VERSION || "none"}`);
+  console.log(`Version App : ${process.env.APP_VERSION || "none"}`);
 
   let express = require("express");
   let app = express();
 
   // creates express app, registers all controller routes and returns you express app instance
   useExpressServer(app, {
-    authorizationChecker: (action: Action, roles: string[]) => {
-      const token = action.request.headers["authorization"];
-      return verifyAuthToken(token);
-    },
+    currentUserChecker,
+    authorizationChecker,
     routePrefix: "/api",
     cors: true,
     controllers: [__dirname + "/controller/*.js"], // we specify controllers we want to use

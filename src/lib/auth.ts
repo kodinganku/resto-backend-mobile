@@ -1,3 +1,4 @@
+import { Action } from "routing-controllers";
 import jwt, { Secret } from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { Request, Response } from "express";
@@ -23,7 +24,7 @@ const verifyToken = (token: string, secret: Secret): any => {
 };
 
 const verifyAuthToken = (token: string) => {
-  return verifyToken(token.split(" ")[1], authSecret) !== false;
+  return verifyToken(token.split(" ")[1], authSecret);
 };
 const generateAuthToken = (data: object) => {
   return generateToken(data, authSecret, 3600); // 1 hour
@@ -58,7 +59,7 @@ const getCustomerUser = async (payload: any) => {
   }
   return {
     ...customer,
-    roles: ["customer"],
+    roles: ["CUSTOMER"],
   };
 };
 
@@ -72,7 +73,35 @@ const getAuthResponse = async (payload: any) => {
   };
 };
 
+const currentUserChecker = async (action: Action) => {
+  const token = action.request.headers["authorization"];
+  try {
+    const credential_data = verifyAuthToken(token);
+    const custRepo = getCustomRepository(CustomerRepository);
+    const customer = await custRepo.findOne({ where: { cst_id: credential_data.cst_id } });
+    return customer;
+  } catch (err) {
+    return null;
+  }
+};
+
+const authorizationChecker = async (action: Action, roles: string[]) => {
+  try {
+    const token = action.request.headers["authorization"];
+    const credential_data = verifyAuthToken(token); //verify first the token, if not valid catch
+    const custRepo = getCustomRepository(CustomerRepository);
+    const customer = await custRepo.findOne({ where: { cst_id: credential_data.cst_id } });
+    if (customer && !roles.length) return true;
+    if (customer && roles.find(role => credential_data.roles.indexOf(role) !== -1)) return true;
+    return false; //condition when not valid
+  } catch (err) {
+    return false;
+  }
+};
+
 export {
+  currentUserChecker,
+  authorizationChecker,
   generateToken,
   generateAuthToken,
   verifyAuthToken,
