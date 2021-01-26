@@ -13,7 +13,7 @@ import {
 import { IsNotEmpty, IsMobilePhone, IsNumber, IsISO8601, IsEnum, IsInt, IsOptional } from "class-validator";
 import { getCustomRepository } from "typeorm";
 import { GenericError } from "../lib/utils";
-import { CustomerRepository } from "../database/repository/";
+import { CustomerRepository, CustomerDiscountRepository } from "../database/repository/";
 import { Customer } from "../database/entity/Customer";
 
 enum Gender {
@@ -47,6 +47,15 @@ export class ProfileController {
   @Get("/")
   getMyProfile(@CurrentUser({ required: true }) customer: Customer) {
     return customer;
+  }
+
+  @Get("/my_discount")
+  async getAllMyDiscount(@CurrentUser({ required: true }) customer: Customer) {
+    const customerDiscRepos = await getCustomRepository(CustomerDiscountRepository);
+    return await customerDiscRepos.findOne({
+      where: { cds_customer: customer.cst_id },
+      relations: ["cds_discount"],
+    });
   }
 
   @Put("/")

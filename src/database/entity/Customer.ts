@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, AfterUpdate } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToMany } from "typeorm";
+import { CustomerDiscount } from "./CustomerDiscount";
 const status = { ACTIVE: 1, SUSPEND: 2 };
 @Entity()
 export class Customer {
@@ -9,6 +10,11 @@ export class Customer {
     length: 45,
   })
   cst_name: string;
+
+  @Column({
+    length: 255,
+  })
+  cst_fcm_token: string;
 
   @Column({
     length: 45,
@@ -68,6 +74,12 @@ export class Customer {
     nullable: true,
   })
   cst_password?: string;
+
+  @OneToMany(
+    type => CustomerDiscount,
+    cust_dist => cust_dist.cds_customer
+  )
+  public cst_discount!: CustomerDiscount[];
 
   @BeforeInsert()
   setStatusToActive() {

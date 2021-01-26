@@ -18,16 +18,18 @@
 <body>
   <div class="g-signin2" data-onsuccess="onSignIn"></div>
   <a href="#" onclick="signOut();">Sign out</a>
-
+  <h2>Your access token : </h2>
+  <p id="token"></p>
 
 </body>
 <script type="text/javascript">
 
   function onSignIn(googleUser) {
     var id_token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token
+    var tokenEl = document.getElementById("token");
     $.ajax({
       url: 'http://localhost:4002/api/auth',
-      data: JSON.stringify({ token: id_token, kuntul: 'hehehe' }),
+      data: JSON.stringify({ token: id_token }),
       dataType: 'json',
       headers: {
         "Content-Type": "application/json"
@@ -35,6 +37,7 @@
       method: 'POST',
       success: (resp) => {
         console.log(resp)
+        tokenEl.innerHTML = resp.token;
       },
       error: (err) => {
         console.log(err)

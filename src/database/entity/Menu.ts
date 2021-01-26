@@ -7,10 +7,12 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  OneToMany,
   JoinTable,
 } from "typeorm";
 import { MenuCategory } from "./MenuCategory";
 import { MenuAdditional } from "./MenuAdditional";
+import { OrderMenu } from "./order/";
 const status = { DELETED: 0, PUBLISH: 1, DRAFT: 2 };
 
 @Entity()
@@ -79,6 +81,12 @@ export class Menu {
     nullable: true,
   })
   mnu_updated: Date;
+
+  @OneToMany(
+    () => OrderMenu,
+    ordermenu => ordermenu.odm_menu
+  )
+  mnu_orders!: OrderMenu[];
 
   @BeforeInsert()
   setStatusToPublish() {

@@ -15,8 +15,7 @@
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "dev": "./node_modules/.bin/concurrently \"tsc -w\" \"nodemon\"",
-    "start": "node dist/server.js",
-    "start:dev": "node dist/server.js"
+    "start": "node dist/server.js"
   },
   "author": "feriva22 <https://github.com/feriva22>",
   "license": "MIT",

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany } from "typeorm";
-import { Menu } from "./Menu";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, ManyToMany, JoinTable } from "typeorm";
+import { OrderMenuAdditional } from "./order/";
 const status = { PUBLISH: 1, DRAFT: 2 };
 
 @Entity()
@@ -27,6 +27,12 @@ export class MenuAdditional {
     type: "tinyint",
   })
   mad_status: number;
+
+  @OneToMany(
+    () => OrderMenuAdditional,
+    ord_menuadd => ord_menuadd.oma_menuadditional
+  )
+  mad_ordmenuadd!: OrderMenuAdditional[];
 
   @BeforeInsert()
   setStatusToPublish() {

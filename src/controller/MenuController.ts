@@ -14,6 +14,7 @@ import {
 import { Between, getCustomRepository } from "typeorm";
 import { GenericError } from "../lib/utils";
 import { MenuRepository } from "../database/repository";
+import { MenuAdditionalRepository } from "../database/repository";
 import { Menu } from "../database/entity";
 import { IsBoolean, IsNumber, IsOptional } from "class-validator";
 
@@ -73,5 +74,17 @@ export class MenuController {
   async getOneCategory(@Param("id") id: number) {
     const menuRepos = await getCustomRepository(MenuRepository);
     return await menuRepos.findOne({ where: { mnu_id: id }, relations: ["mnu_category", "mnu_additionals"] });
+  }
+
+  @Get("/additional")
+  async getAllMenuAdditional() {
+    const menuAddRepos = await getCustomRepository(MenuAdditionalRepository);
+    return menuAddRepos.find({ relations: [] });
+  }
+
+  @Get("/additional/:id")
+  async getOneMenuAdditional(@Param("id") id: number) {
+    const menuAddRepos = await getCustomRepository(MenuAdditionalRepository);
+    return await menuAddRepos.findOne({ where: { mad_id: id }, relations: ["mad_menus"] });
   }
 }

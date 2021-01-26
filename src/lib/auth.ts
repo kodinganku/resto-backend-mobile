@@ -55,7 +55,7 @@ const getCustomerUser = async (payload: any) => {
     where: { cst_email: payload.email },
   });
   if (customer == null) {
-    customer = await customerRepository.createAndSave(payload.name, payload.email);
+    customer = await customerRepository.createAndSave(payload.name, payload.email, "RANDOM NEED CHANGE FROM DEVICE");
   }
   return {
     ...customer,
