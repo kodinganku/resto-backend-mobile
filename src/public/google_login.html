@@ -6,7 +6,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
   <meta name="google-signin-client_id"
-    content="854830601699-j1sg1p3k1tbpt5mn1ur265mtb2mub1ju.apps.googleusercontent.com">
+    content="621897321892-bna5glj6qae8l82cs006os81qle35qkr.apps.googleusercontent.com">
 
   <style media="screen">
     h3 {
@@ -18,16 +18,18 @@
 <body>
   <div class="g-signin2" data-onsuccess="onSignIn"></div>
   <a href="#" onclick="signOut();">Sign out</a>
-
+  <h2>Your access token : </h2>
+  <p id="token"></p>
 
 </body>
 <script type="text/javascript">
 
   function onSignIn(googleUser) {
     var id_token = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token
+    var tokenEl = document.getElementById("token");
     $.ajax({
       url: 'http://localhost:4002/api/auth',
-      data: JSON.stringify({ token: id_token, kuntul: 'hehehe' }),
+      data: JSON.stringify({ token: id_token }),
       dataType: 'json',
       headers: {
         "Content-Type": "application/json"
@@ -35,6 +37,7 @@
       method: 'POST',
       success: (resp) => {
         console.log(resp)
+        tokenEl.innerHTML = resp.token;
       },
       error: (err) => {
         console.log(err)

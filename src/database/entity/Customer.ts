@@ -1,35 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, AfterUpdate } from "typeorm";
-const status = { "ACTIVE" : 1, "SUSPEND" : 2};
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToMany } from "typeorm";
+import { CustomerDiscount } from "./CustomerDiscount";
+const status = { ACTIVE: 1, SUSPEND: 2 };
 @Entity()
 export class Customer {
   @PrimaryGeneratedColumn()
   cst_id: number;
 
   @Column({
-    length: 45
+    length: 45,
   })
   cst_name: string;
 
   @Column({
+    type: "text",
+  })
+  cst_fcm_token: string;
+
+  @Column({
     length: 45,
-    nullable: true
+    nullable: true,
   })
   cst_phone: string;
 
   @Column({
-    length: 45
+    length: 45,
   })
   cst_email: string;
 
   @Column({
     type: "date",
-    nullable: true
+    nullable: true,
   })
   cst_birthday: string;
 
   @Column({
-    type: "bit",
-    nullable: true
+    type: "tinyint",
+    nullable: true,
   })
   cst_gender: number;
 
@@ -45,15 +51,15 @@ export class Customer {
 
   @Column({
     type: "timestamp",
-    default: () => 'CURRENT_TIMESTAMP'
+    default: () => "CURRENT_TIMESTAMP",
   })
   cst_created: number;
 
   @Column({
     type: "timestamp",
-    nullable: true
+    nullable: true,
   })
-  cst_updated: number;
+  cst_updated: Date;
 
   @Column({
     length: 45,
@@ -69,14 +75,19 @@ export class Customer {
   })
   cst_password?: string;
 
+  @OneToMany(
+    type => CustomerDiscount,
+    cust_dist => cust_dist.cds_customer
+  )
+  public cst_discount!: CustomerDiscount[];
 
   @BeforeInsert()
-  setStatusToActive(){
+  setStatusToActive() {
     this.cst_status = status["ACTIVE"];
   }
 
   @BeforeUpdate()
   setUpdatedDate() {
-    this.cst_updated = Date.now();
+    this.cst_updated = new Date();
   }
 }

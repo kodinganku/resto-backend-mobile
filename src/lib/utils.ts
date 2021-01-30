@@ -1,3 +1,4 @@
+require("dotenv").config();
 export class GenericError extends Error {
   public httpCode: number = 500;
   public message: string = "Internal Server Error";
@@ -13,6 +14,8 @@ export class GenericError extends Error {
   toJSON() {
     return {
       message: this.message,
+      environtment: process.env.NODE_ENV,
+      app_version: process.env.APP_VERSION || "none",
     };
   }
 }
