@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany } from "typeorm";
+require("dotenv").config();
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany, AfterLoad } from "typeorm";
 import { Menu } from "./Menu";
 const status = { PUBLISH: 1, DRAFT: 2 };
 
@@ -17,6 +18,12 @@ export class MenuCategory {
   })
   mnc_status: number;
 
+  @Column({
+    length: 255,
+    nullable: true,
+  })
+  mnc_asset: string;
+
   @OneToMany(
     () => Menu,
     menu => menu.mnu_category
@@ -26,5 +33,10 @@ export class MenuCategory {
   @BeforeInsert()
   setStatusToPublish() {
     this.mnc_status = status["PUBLISH"];
+  }
+
+  @AfterLoad()
+  setComputedAssetURI() {
+    this.mnc_asset = `http://${process.env.LISTEN_IP}:${process.env.PORT}${this.mnc_asset}`;
   }
 }

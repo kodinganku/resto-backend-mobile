@@ -12,7 +12,7 @@ export class Customer {
   cst_name: string;
 
   @Column({
-    length: 255,
+    type: "text",
   })
   cst_fcm_token: string;
 

@@ -9,8 +9,8 @@ import { CustomerRepository } from "../database/repository/CustomerRepository";
 const authSecret = process.env.AUTH_TOKEN_SECRET as Secret;
 const refreshSecret = process.env.REFRESH_TOKEN_SECRET as Secret;
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const googleAuthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+const GOOGLE_MOBILE_CLIENT_ID = process.env.GOOGLE_MOBILE_CLIENT_ID;
+const googleAuthClient = new OAuth2Client(GOOGLE_MOBILE_CLIENT_ID);
 
 const generateToken = (data: object, secret: Secret, expiresIn: number): [string, Date] => {
   const now = new Date();
@@ -38,38 +38,42 @@ const generateRefreshToken = (data: object, res: Response) => {
     secure: false,
     sameSite: "lax",
   });
+  return [token, expiry];
 };
 
 const verifyGoogleToken = async (token: string) => {
   const ticket = await googleAuthClient.verifyIdToken({
     idToken: token,
-    audience: GOOGLE_CLIENT_ID,
+    audience: GOOGLE_MOBILE_CLIENT_ID,
   });
   return ticket;
 };
 
-const getCustomerUser = async (payload: any) => {
+const getCustomerUser = async (payload: any, credential) => {
   //some query to repository to get customer data by email
   const customerRepository = getCustomRepository(CustomerRepository);
   let customer = await customerRepository.findOne({
     where: { cst_email: payload.email },
   });
   if (customer == null) {
-    customer = await customerRepository.createAndSave(payload.name, payload.email, "RANDOM NEED CHANGE FROM DEVICE");
+    customer = await customerRepository.createAndSave(payload.name, payload.email, credential.fcm_token);
   }
+  customer.cst_fcm_token = credential.fcm_token;
+  await customerRepository.save(customer);
+
   return {
     ...customer,
     roles: ["CUSTOMER"],
   };
 };
 
-const getAuthResponse = async (payload: any) => {
-  const customer = await getCustomerUser(payload);
+const getAuthResponse = async (payload: any, credential) => {
+  const customer = await getCustomerUser(payload, credential);
   const [token, tokenExpiry] = generateAuthToken(customer);
+  const authToken = { token, expires_at: tokenExpiry };
   return {
     customer,
-    token,
-    expires_at: tokenExpiry.getTime(),
+    authToken,
   };
 };
 
